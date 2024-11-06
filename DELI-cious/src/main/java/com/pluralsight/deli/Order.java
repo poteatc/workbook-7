@@ -16,11 +16,6 @@ public class Order implements Priceable {
 
     @Override
     public double getPrice() {
-        return 0;
-    }
-
-    @Override
-    public void setPrice(double price) {
-
+        return products.stream().mapToDouble(Product::getPrice).sum();
     }
 }

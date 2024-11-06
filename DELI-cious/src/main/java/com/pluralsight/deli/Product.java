@@ -10,6 +10,8 @@ of its methods. This is because an abstract class itself cannot be instantiated,
 public abstract class Product implements Priceable {
     protected double price;
 
+    public Product(){}
+
     public Product(double price) {
         this.price = price;
     }

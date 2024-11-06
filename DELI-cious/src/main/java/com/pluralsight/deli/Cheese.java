@@ -32,10 +32,4 @@ public class Cheese extends PremiumTopping {
         // Optionally, you could call the other getPrice() method here if needed
         return getPrice(BreadSize.FOOTLONG);  // Default to FOOTLONG if bread size is not provided
     }
-
-    @Override
-    public void setPrice(double price) {
-        // Optionally, throw an exception if setting the price is not appropriate for the topping
-        throw new UnsupportedOperationException("Cannot set price directly for a topping.");
-    }
 }
