@@ -1,4 +1,4 @@
 package com.pluralsight.deli;
 
-public enum ProductSize {
+public enum DrinkSize {
 }
