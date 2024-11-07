@@ -5,6 +5,7 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class OrderPanel extends JPanel {
+    private static boolean isLastItemMainDish = false;
     private static JTextArea orderDetails;
     private static ArrayList<String> orderItems = new ArrayList<>();
 
@@ -18,9 +19,14 @@ public class OrderPanel extends JPanel {
     }
 
     public static void addOrderItem(String item, double price) {
-        orderItems.add(item + " - $" + price);
+        if (isLastItemMainDish) {
+            orderItems.add("    + " + item + " - $" + price); // Indented for subitem
+        } else {
+            orderItems.add(item + " - $" + price);
+            isLastItemMainDish = item.equals("Sandwich"); // Set flag if main dish
+        }
         updateOrderDetails();
-        TotalPanel.updateTotal(price); // Update the total
+        TotalPanel.updateTotal(price);
     }
 
     private static void updateOrderDetails() {
@@ -40,5 +46,7 @@ public class OrderPanel extends JPanel {
         orderItems.clear();
         updateOrderDetails();
     }
+
+
 
 }
