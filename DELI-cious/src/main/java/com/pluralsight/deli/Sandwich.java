@@ -25,8 +25,4 @@ public class Sandwich extends Product {
         return super.getPrice();
     }
 
-    @Override
-    public void setPrice(double price) {
-
-    }
 }
