@@ -2,32 +2,39 @@ package com.pluralsight.deli.gui;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class MenuPanel extends JPanel {
     private JPanel mainMenuPanel;
-    private JPanel toppingsPanel;
+    private JPanel sandwichPanel;
     private JPanel drinksPanel;
     private JPanel chipsPanel;
 
     // Track current drink selection
     private String selectedDrinkType = "";
     private String selectedDrinkSize = "";
-    private final JLabel currentSelectionLabel = new JLabel("Selected drink: None");
+    private final JLabel currentDrinkSelectionLabel = new JLabel("Selected drink: None");
+
+    // Track sandwich customization
+    private String selectedBreadSize = "";
+    private double breadPrice = 0.0;
+    private ArrayList<String> selectedCheeses = new ArrayList<>();
+    private ArrayList<String> selectedMeats = new ArrayList<>();
+    private ArrayList<String> selectedRegularToppings = new ArrayList<>();
+    private final JLabel currentSelectionLabel = new JLabel("Selected sandwich: None");
 
     public MenuPanel() {
         setLayout(new CardLayout()); // CardLayout to switch between main and submenus
 
         // Initialize the main menu and submenus
         mainMenuPanel = createMainMenuPanel();
-        toppingsPanel = createToppingsPanel();
+        sandwichPanel = createSandwichPanel();
         drinksPanel = createDrinksPanel();
         chipsPanel = createChipsPanel();
 
         // Add each panel to the CardLayout
         add(mainMenuPanel, "MainMenu");
-        add(toppingsPanel, "ToppingsMenu");
+        add(sandwichPanel, "SandwichMenu");
         add(drinksPanel, "DrinksMenu");
         add(chipsPanel, "ChipsMenu");
 
@@ -41,11 +48,17 @@ public class MenuPanel extends JPanel {
         cl.show(this, "MainMenu");
     }
 
-    // Show the toppings menu for the sandwich
-    private void showToppingsMenu() {
+    // Show the sandwich menu
+    private void showSandwichMenu() {
         CardLayout cl = (CardLayout) getLayout();
-        cl.show(this, "ToppingsMenu");
+        cl.show(this, "SandwichMenu");
     }
+
+    // Show the toppings menu for the sandwich
+//    private void showToppingsMenu() {
+//        CardLayout cl = (CardLayout) getLayout();
+//        cl.show(this, "ToppingsMenu");
+//    }
 
     // Show the drinks menu for choosing type and size
     private void showDrinksMenu() {
@@ -64,8 +77,8 @@ public class MenuPanel extends JPanel {
     private JPanel createMainMenuPanel() {
         JPanel panel = new JPanel(new GridLayout(0, 1));
 
-        JButton sandwichButton = new JButton("Sandwich - $5.00");
-        sandwichButton.addActionListener(e -> showToppingsMenu());
+        JButton sandwichButton = new JButton("Sandwich - Customize");
+        sandwichButton.addActionListener(e -> showSandwichMenu());
 
         JButton drinkButton = new JButton("Drink - Choose Type and Size");
         drinkButton.addActionListener(e -> showDrinksMenu());
@@ -81,30 +94,181 @@ public class MenuPanel extends JPanel {
     }
 
         // Create toppings panel with buttons for each topping
-    private JPanel createToppingsPanel() {
-        JPanel panel = new JPanel(new GridLayout(0, 1));
+//    private JPanel createToppingsPanel() {
+//        JPanel panel = new JPanel(new GridLayout(0, 1));
+//
+//        // Example toppings
+//        JButton cheeseButton = new JButton("Cheese - $0.50");
+//        cheeseButton.addActionListener(e -> OrderPanel.addOrderItem("Cheese", 0.50));
+//
+//        JButton lettuceButton = new JButton("Lettuce - $0.30");
+//        lettuceButton.addActionListener(e -> OrderPanel.addOrderItem("Lettuce", 0.30));
+//
+//        JButton tomatoButton = new JButton("Tomato - $0.40");
+//        tomatoButton.addActionListener(e -> OrderPanel.addOrderItem("Tomato", 0.40));
+//
+//        // Add a "Back" button to return to the main menu
+//        JButton backButton = new JButton("Back to Main Menu");
+//        backButton.addActionListener(e -> showMainMenu());
+//
+//        // Add topping buttons and back button to the panel
+//        panel.add(cheeseButton);
+//        panel.add(lettuceButton);
+//        panel.add(tomatoButton);
+//        panel.add(backButton);
+//
+//        return panel;
+//    }
 
-        // Example toppings
-        JButton cheeseButton = new JButton("Cheese - $0.50");
-        cheeseButton.addActionListener(e -> OrderPanel.addOrderItem("Cheese", 0.50));
+    // Sandwich customization menu with multiple panels for options
+    private JPanel createSandwichPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
 
-        JButton lettuceButton = new JButton("Lettuce - $0.30");
-        lettuceButton.addActionListener(e -> OrderPanel.addOrderItem("Lettuce", 0.30));
+        // Bread size panel
+        JPanel breadPanel = new JPanel(new GridLayout(0, 1));
+        JLabel breadLabel = new JLabel("Choose Bread Size:");
+        breadPanel.add(breadLabel);
 
-        JButton tomatoButton = new JButton("Tomato - $0.40");
-        tomatoButton.addActionListener(e -> OrderPanel.addOrderItem("Tomato", 0.40));
+        JButton smallBreadButton = new JButton("4\" - $5.50");
+        smallBreadButton.addActionListener(e -> updateBreadSelection("4\"", 5.50));
 
-        // Add a "Back" button to return to the main menu
-        JButton backButton = new JButton("Back to Main Menu");
-        backButton.addActionListener(e -> showMainMenu());
+        JButton mediumBreadButton = new JButton("8\" - $7.50");
+        mediumBreadButton.addActionListener(e -> updateBreadSelection("8\"", 7.50));
 
-        // Add topping buttons and back button to the panel
-        panel.add(cheeseButton);
-        panel.add(lettuceButton);
-        panel.add(tomatoButton);
-        panel.add(backButton);
+        JButton largeBreadButton = new JButton("12\" - $9.00");
+        largeBreadButton.addActionListener(e -> updateBreadSelection("12\"", 9.00));
+
+        breadPanel.add(smallBreadButton);
+        breadPanel.add(mediumBreadButton);
+        breadPanel.add(largeBreadButton);
+
+        // Premium cheese panel
+        JPanel cheesePanel = new JPanel(new GridLayout(0, 1));
+        JLabel cheeseLabel = new JLabel("Choose Premium Cheeses (+$1.00 each):");
+        cheesePanel.add(cheeseLabel);
+
+        JButton cheddarButton = new JButton("Cheddar");
+        cheddarButton.addActionListener(e -> togglePremiumSelection(selectedCheeses, "Cheddar", 1.00));
+
+        JButton swissButton = new JButton("Swiss");
+        swissButton.addActionListener(e -> togglePremiumSelection(selectedCheeses, "Swiss", 1.00));
+
+        JButton provoloneButton = new JButton("Provolone");
+        provoloneButton.addActionListener(e -> togglePremiumSelection(selectedCheeses, "Provolone", 1.00));
+
+        cheesePanel.add(cheddarButton);
+        cheesePanel.add(swissButton);
+        cheesePanel.add(provoloneButton);
+
+        // Premium meats panel
+        JPanel meatPanel = new JPanel(new GridLayout(0, 1));
+        JLabel meatLabel = new JLabel("Choose Premium Meats (+$2.00 each):");
+        meatPanel.add(meatLabel);
+
+        JButton turkeyButton = new JButton("Turkey");
+        turkeyButton.addActionListener(e -> togglePremiumSelection(selectedMeats, "Turkey", 2.00));
+
+        JButton hamButton = new JButton("Ham");
+        hamButton.addActionListener(e -> togglePremiumSelection(selectedMeats, "Ham", 2.00));
+
+        JButton roastBeefButton = new JButton("Roast Beef");
+        roastBeefButton.addActionListener(e -> togglePremiumSelection(selectedMeats, "Roast Beef", 2.00));
+
+        meatPanel.add(turkeyButton);
+        meatPanel.add(hamButton);
+        meatPanel.add(roastBeefButton);
+
+        // Regular toppings panel (no extra charge)
+        JPanel regularToppingsPanel = new JPanel(new GridLayout(0, 1));
+        JLabel regularLabel = new JLabel("Choose Regular Toppings (no extra charge):");
+        regularToppingsPanel.add(regularLabel);
+
+        JButton lettuceButton = new JButton("Lettuce");
+        lettuceButton.addActionListener(e -> toggleSelection(selectedRegularToppings, "Lettuce"));
+
+        JButton tomatoButton = new JButton("Tomato");
+        tomatoButton.addActionListener(e -> toggleSelection(selectedRegularToppings, "Tomato"));
+
+        JButton onionButton = new JButton("Onion");
+        onionButton.addActionListener(e -> toggleSelection(selectedRegularToppings, "Onion"));
+
+        regularToppingsPanel.add(lettuceButton);
+        regularToppingsPanel.add(tomatoButton);
+        regularToppingsPanel.add(onionButton);
+
+        // Current selection and OK button
+        JPanel selectionPanel = new JPanel();
+        selectionPanel.add(currentSelectionLabel);
+
+        JButton okButton = new JButton("OK");
+        okButton.addActionListener(e -> confirmSandwichSelection());
+
+        selectionPanel.add(okButton);
+
+        // Assemble sandwich menu layout
+        panel.add(breadPanel, BorderLayout.WEST);
+        panel.add(cheesePanel, BorderLayout.CENTER);
+        panel.add(meatPanel, BorderLayout.EAST);
+        panel.add(regularToppingsPanel, BorderLayout.NORTH);
+        panel.add(selectionPanel, BorderLayout.SOUTH);
 
         return panel;
+    }
+
+    // Update bread selection
+    private void updateBreadSelection(String size, double price) {
+        selectedBreadSize = size;
+        breadPrice = price;
+        updateCurrentSelectionLabel();
+    }
+
+    // Toggle premium selections (cheese or meat)
+    private void togglePremiumSelection(ArrayList<String> list, String item, double price) {
+        if (list.contains(item)) {
+            list.remove(item);
+        } else {
+            list.add(item);
+        }
+        updateCurrentSelectionLabel();
+    }
+
+    // Toggle regular toppings selection
+    private void toggleSelection(ArrayList<String> list, String item) {
+        if (list.contains(item)) {
+            list.remove(item);
+        } else {
+            list.add(item);
+        }
+        updateCurrentSelectionLabel();
+    }
+
+    // Update the display label with the current sandwich selections
+    private void updateCurrentSelectionLabel() {
+        StringBuilder display = new StringBuilder("Selected sandwich: " + selectedBreadSize + " bread");
+        if (!selectedCheeses.isEmpty()) display.append(", Cheeses: ").append(selectedCheeses);
+        if (!selectedMeats.isEmpty()) display.append(", Meats: ").append(selectedMeats);
+        if (!selectedRegularToppings.isEmpty()) display.append(", Regular Toppings: ").append(selectedRegularToppings);
+        currentSelectionLabel.setText(display.toString());
+    }
+
+    // Confirm the sandwich selection and add to order
+    private void confirmSandwichSelection() {
+        double totalPrice = breadPrice + selectedCheeses.size() * 1.00 + selectedMeats.size() * 2.00;
+        String orderItem = selectedBreadSize + " Sandwich with " + selectedCheeses + ", " + selectedMeats + ", " + selectedRegularToppings;
+
+        OrderPanel.addOrderItem(orderItem, totalPrice);
+        resetSandwichSelection();
+        showMainMenu();
+    }
+
+    // Reset selections after confirmation
+    private void resetSandwichSelection() {
+        selectedBreadSize = "";
+        breadPrice = 0.0;
+        selectedCheeses.clear();
+        selectedMeats.clear();
+        selectedRegularToppings.clear();
+        currentSelectionLabel.setText("Selected sandwich: None");
     }
 
     // Drinks menu for selecting type and size
@@ -147,7 +311,7 @@ public class MenuPanel extends JPanel {
 
         // Current selection display
         JPanel selectionPanel = new JPanel();
-        selectionPanel.add(currentSelectionLabel);
+        selectionPanel.add(currentDrinkSelectionLabel);
 
         // OK button to finalize selection and return to main menu
         JButton okButton = new JButton("OK");
@@ -199,7 +363,7 @@ public class MenuPanel extends JPanel {
         else if (drinkSize.equals("Medium")) sizePrice = "$1.00";
         else if (drinkSize.equals("Large")) sizePrice = "$1.50";
 
-        currentSelectionLabel.setText("Selected drink: " + drinkType + " (" + drinkSize + ") - " + sizePrice);
+        currentDrinkSelectionLabel.setText("Selected drink: " + drinkType + " (" + drinkSize + ") - " + sizePrice);
     }
 
     // Confirm selection and add it to the order, then return to main menu
@@ -224,7 +388,7 @@ public class MenuPanel extends JPanel {
     private void resetDrinkSelection() {
         selectedDrinkType = "";
         selectedDrinkSize = "";
-        currentSelectionLabel.setText("Selected drink: None");
+        currentDrinkSelectionLabel.setText("Selected drink: None");
     }
 }
 
